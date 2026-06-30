@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — ProRentalHub{% endblock %}
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="dashboard-header">
+        <div>
+            <h1>Welcome, {{ session.user_name }} 👋</h1>
+            <p class="dashboard-role">
+                {% if session.user_role == 'owner' %}🏠 Property Owner{% else %}👤 Client{% endif %}
+            </p>
+        </div>
+        {% if session.user_role == 'owner' %}
+        <a href="{{ url_for('add_property') }}" class="btn-primary">+ Add New Property</a>
+        {% endif %}
+    </div>
+
+    {% if session.user_role == 'owner' %}
+    <div class="stats-row">
+        <div class="stat-box">
+            <span class="stat-num">{{ properties|selectattr('status', 'equalto', 'approved')|list|length }}</span>
+            <span class="stat-label">Approved</span>
+        </div>
+        <div class="stat-box pending">
+            <span class="stat-num">{{ properties|selectattr('status', 'equalto', 'pending')|list|length }}</span>
+            <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-box rejected">
+            <span class="stat-num">{{ properties|selectattr('status', 'equalto', 'rejected')|list|length }}</span>
+            <span class="stat-label">Rejected</span>
+        </div>
+        <div class="stat-box total">
+            <span class="stat-num">{{ properties|length }}</span>
+            <span class="stat-label">Total</span>
+        </div>
+    </div>
+
+    <h2 class="section-title" style="margin-bottom:1.5rem;">My Properties</h2>
+    {% if properties %}
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Property</th><th>Type</th><th>City</th><th>Price/mo</th><th>Status</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in properties %}
+                <tr>
+                    <td><strong>{{ p.title }}</strong><br><small>{{ p.location }}</small></td>
+                    <td>{{ p.property_type }}</td>
+                    <td>{{ p.city }}</td>
+                    <td>₹{{ "{:,.0f}".format(p.price) }}</td>
+                    <td>
+                        <span class="status-badge status-{{ p.status }}">
+                            {% if p.status == 'approved' %}✅ Approved
+                            {% elif p.status == 'pending' %}⏳ Pending
+                            {% else %}❌ Rejected{% endif %}
+                        </span>
+                    </td>
+                    <td class="action-btns">
+                        <a href="{{ url_for('edit_property', pid=p.id) }}" class="btn-edit">Edit</a>
+                        <a href="{{ url_for('delete_property', pid=p.id) }}" class="btn-delete" onclick="return confirm('Delete this property?')">Delete</a>
+                        {% if p.status == 'approved' %}
+                        <a href="{{ url_for('property_detail', pid=p.id) }}" class="btn-view">View</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🏚️</div>
+        <h3>No Properties Yet</h3>
+        <p>Start by adding your first property listing.</p>
+        <a href="{{ url_for('add_property') }}" class="btn-primary">+ Add Property</a>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <h2 class="section-title" style="margin-bottom:1.5rem;">Approved Properties</h2>
+    {% if properties %}
+    <div class="properties-grid">
+        {% for p in properties %}
+        <div class="property-card">
+            <div class="card-image-wrap">
+                {% if p.image_filename %}
+                    <img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt="{{ p.title }}" class="card-image">
+                {% else %}
+                    <div class="card-image-placeholder">🏠</div>
+                {% endif %}
+                <span class="card-badge">{{ p.property_type }}</span>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">{{ p.title }}</h3>
+                <p class="card-location">📍 {{ p.location }}, {{ p.city }}</p>
+                <div class="card-footer">
+                    <span class="card-price">₹{{ "{:,.0f}".format(p.price) }}/mo</span>
+                    <a href="{{ url_for('property_detail', pid=p.id) }}" class="card-btn">Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No Properties Available</h3>
+        <p>Check back soon for new listings.</p>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

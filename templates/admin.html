@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel — ProRentalHub{% endblock %}
+{% block content %}
+<div class="admin-wrapper">
+    <div class="admin-header">
+        <h1>🛡️ Admin Control Panel</h1>
+        <p>Manage property listings and users</p>
+    </div>
+    <div class="stats-row">
+        <div class="stat-box pending"><span class="stat-num">{{ pending|length }}</span><span class="stat-label">Pending Review</span></div>
+        <div class="stat-box"><span class="stat-num">{{ approved|length }}</span><span class="stat-label">Approved</span></div>
+        <div class="stat-box rejected"><span class="stat-num">{{ rejected|length }}</span><span class="stat-label">Rejected</span></div>
+        <div class="stat-box total"><span class="stat-num">{{ users|length }}</span><span class="stat-label">Total Users</span></div>
+    </div>
+    <div class="admin-tabs">
+        <button class="tab-btn active" onclick="showTab('pending', this)">⏳ Pending ({{ pending|length }})</button>
+        <button class="tab-btn" onclick="showTab('approved', this)">✅ Approved ({{ approved|length }})</button>
+        <button class="tab-btn" onclick="showTab('rejected', this)">❌ Rejected ({{ rejected|length }})</button>
+        <button class="tab-btn" onclick="showTab('users', this)">👥 Users ({{ users|length }})</button>
+    </div>
+
+    <div id="tab-pending" class="tab-content active">
+        {% if pending %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Property</th><th>Owner</th><th>Type</th><th>City</th><th>Price</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for p in pending %}
+                    <tr>
+                        <td><strong>{{ p.title }}</strong><br><small>{{ p.location }}</small></td>
+                        <td>{{ p.owner_name }}<br><small>{{ p.owner_phone }}</small></td>
+                        <td>{{ p.property_type }}</td>
+                        <td>{{ p.city }}</td>
+                        <td>₹{{ "{:,.0f}".format(p.price) }}</td>
+                        <td>{{ p.created_at[:10] }}</td>
+                        <td class="action-btns">
+                            <a href="{{ url_for('approve_property', pid=p.id) }}" class="btn-approve">✅ Approve</a>
+                            <a href="{{ url_for('reject_property', pid=p.id) }}" class="btn-reject">❌ Reject</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><div class="empty-icon">🎉</div><h3>No Pending Properties</h3><p>All caught up!</p></div>
+        {% endif %}
+    </div>
+
+    <div id="tab-approved" class="tab-content">
+        {% if approved %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Property</th><th>Owner</th><th>Type</th><th>City</th><th>Price</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for p in approved %}
+                    <tr>
+                        <td><strong>{{ p.title }}</strong></td>
+                        <td>{{ p.owner_name }}</td>
+                        <td>{{ p.property_type }}</td>
+                        <td>{{ p.city }}</td>
+                        <td>₹{{ "{:,.0f}".format(p.price) }}</td>
+                        <td>{{ p.created_at[:10] }}</td>
+                        <td class="action-btns">
+                            <a href="{{ url_for('property_detail', pid=p.id) }}" class="btn-view">View</a>
+                            <a href="{{ url_for('reject_property', pid=p.id) }}" class="btn-reject">Reject</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><div class="empty-icon">📋</div><h3>No Approved Properties</h3></div>
+        {% endif %}
+    </div>
+
+    <div id="tab-rejected" class="tab-content">
+        {% if rejected %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Property</th><th>Owner</th><th>Type</th><th>City</th><th>Price</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for p in rejected %}
+                    <tr>
+                        <td><strong>{{ p.title }}</strong></td>
+                        <td>{{ p.owner_name }}</td>
+                        <td>{{ p.property_type }}</td>
+                        <td>{{ p.city }}</td>
+                        <td>₹{{ "{:,.0f}".format(p.price) }}</td>
+                        <td>{{ p.created_at[:10] }}</td>
+                        <td class="action-btns">
+                            <a href="{{ url_for('approve_property', pid=p.id) }}" class="btn-approve">Re-Approve</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><div class="empty-icon">📋</div><h3>No Rejected Properties</h3></div>
+        {% endif %}
+    </div>
+
+    <div id="tab-users" class="tab-content">
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th></tr></thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>#{{ u.id }}</td>
+                        <td><strong>{{ u.name }}</strong></td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.phone or '—' }}</td>
+                        <td><span class="role-badge role-{{ u.role }}">{{ u.role }}</span></td>
+                        <td>{{ u.created_at[:10] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+function showTab(name, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
+{% endblock %}

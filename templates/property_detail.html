@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}{{ prop.title }} — ProRentalHub{% endblock %}
+{% block content %}
+<div class="detail-wrapper">
+    <a href="{{ url_for('index') }}" class="back-link">← Back to Listings</a>
+    <div class="detail-card">
+        <div class="detail-image-wrap">
+            {% if prop.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' + prop.image_filename) }}" alt="{{ prop.title }}" class="detail-image">
+            {% else %}
+                <div class="detail-image-placeholder">🏠</div>
+            {% endif %}
+            <span class="detail-badge">{{ prop.property_type }}</span>
+        </div>
+        <div class="detail-content">
+            <div class="detail-top">
+                <div>
+                    <h1 class="detail-title">{{ prop.title }}</h1>
+                    <p class="detail-location">📍 {{ prop.location }}, {{ prop.city }}</p>
+                </div>
+                <div class="detail-price-box">
+                    <span class="detail-price">₹{{ "{:,.0f}".format(prop.price) }}</span>
+                    <span class="detail-price-sub">per month</span>
+                </div>
+            </div>
+            <div class="detail-specs">
+                {% if prop.bedrooms %}
+                <div class="spec-item"><span class="spec-icon">🛏</span><span class="spec-val">{{ prop.bedrooms }}</span><span class="spec-label">Bedrooms</span></div>
+                {% endif %}
+                {% if prop.bathrooms %}
+                <div class="spec-item"><span class="spec-icon">🚿</span><span class="spec-val">{{ prop.bathrooms }}</span><span class="spec-label">Bathrooms</span></div>
+                {% endif %}
+                {% if prop.area %}
+                <div class="spec-item"><span class="spec-icon">📐</span><span class="spec-val">{{ prop.area }}</span><span class="spec-label">sq.ft</span></div>
+                {% endif %}
+                <div class="spec-item"><span class="spec-icon">🏷️</span><span class="spec-val">{{ prop.property_type }}</span><span class="spec-label">Type</span></div>
+            </div>
+            {% if prop.description %}
+            <div class="detail-description">
+                <h3>About This Property</h3>
+                <p>{{ prop.description }}</p>
+            </div>
+            {% endif %}
+            <div class="owner-contact-card">
+                <h3>📞 Contact Owner</h3>
+                <div class="owner-info">
+                    <div class="owner-avatar">{{ prop.owner_name[0].upper() }}</div>
+                    <div class="owner-details">
+                        <strong>{{ prop.owner_name }}</strong>
+                        <p>Property Owner</p>
+                    </div>
+                </div>
+                <div class="contact-actions">
+                    <a href="tel:{{ prop.owner_phone }}" class="btn-call">📞 Call: {{ prop.owner_phone }}</a>
+                    <a href="mailto:{{ prop.owner_email }}" class="btn-email">✉️ Send Email</a>
+                </div>
+                <p class="contact-note">⚠️ Always visit the property before making any payment.</p>
+            </div>
+            <div class="detail-posted"><p>Listed on: {{ prop.created_at[:10] }}</p></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

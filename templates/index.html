@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}ProRentalHub — Find Your Perfect Home{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <p class="hero-tag">✦ India's Trusted Rental Platform</p>
+        <h1 class="hero-title">Find Your <span class="gradient-text">Dream Rental</span><br>Property Today</h1>
+        <p class="hero-sub">Browse thousands of verified rental properties — apartments, flats, villas & more</p>
+        <form class="search-bar" method="GET" action="{{ url_for('index') }}">
+            <input type="text" name="search" placeholder="Search by title or location..." value="{{ search }}" class="search-input">
+            <input type="text" name="city" placeholder="City..." value="{{ city }}" class="search-city">
+            <select name="type" class="search-type">
+                <option value="">All Types</option>
+                <option value="Apartment" {% if ptype=='Apartment' %}selected{% endif %}>Apartment</option>
+                <option value="Flat" {% if ptype=='Flat' %}selected{% endif %}>Flat</option>
+                <option value="Villa" {% if ptype=='Villa' %}selected{% endif %}>Villa</option>
+                <option value="House" {% if ptype=='House' %}selected{% endif %}>House</option>
+                <option value="PG" {% if ptype=='PG' %}selected{% endif %}>PG</option>
+                <option value="Office" {% if ptype=='Office' %}selected{% endif %}>Office</option>
+            </select>
+            <button type="submit" class="search-btn">🔍 Search</button>
+        </form>
+    </div>
+    <div class="hero-stats">
+        <div class="stat"><strong>{{ properties|length }}+</strong><span>Listed</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><strong>100%</strong><span>Verified</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><strong>Free</strong><span>Contact</span></div>
+    </div>
+</section>
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Available Properties</h2>
+        <p class="section-sub">All listings are admin-verified for your safety</p>
+    </div>
+    {% if properties %}
+    <div class="properties-grid">
+        {% for p in properties %}
+        <div class="property-card">
+            <div class="card-image-wrap">
+                {% if p.image_filename %}
+                    <img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt="{{ p.title }}" class="card-image">
+                {% else %}
+                    <div class="card-image-placeholder">🏠</div>
+                {% endif %}
+                <span class="card-badge">{{ p.property_type }}</span>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">{{ p.title }}</h3>
+                <p class="card-location">📍 {{ p.location }}, {{ p.city }}</p>
+                <div class="card-meta">
+                    {% if p.bedrooms %}<span>🛏 {{ p.bedrooms }} Bed</span>{% endif %}
+                    {% if p.bathrooms %}<span>🚿 {{ p.bathrooms }} Bath</span>{% endif %}
+                    {% if p.area %}<span>📐 {{ p.area }} sq.ft</span>{% endif %}
+                </div>
+                <div class="card-footer">
+                    <span class="card-price">₹{{ "{:,.0f}".format(p.price) }}/mo</span>
+                    <a href="{{ url_for('property_detail', pid=p.id) }}" class="card-btn">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🏚️</div>
+        <h3>No Properties Found</h3>
+        <p>Try adjusting your search filters or check back later.</p>
+        <a href="{{ url_for('index') }}" class="btn-primary">Clear Filters</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

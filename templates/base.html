@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Broker.com{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
+        <span class="brand-icon">🏠</span>
+        Pro<span class="brand-accent">Rental</span>Hub
+    </a>
+    <div class="nav-links">
+        <a href="{{ url_for('index') }}" class="nav-link">Explore</a>
+        {% if session.user_id %}
+            {% if session.user_role == 'admin' %}
+                <a href="{{ url_for('admin') }}" class="nav-link">Admin Panel</a>
+            {% else %}
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                {% if session.user_role == 'owner' %}
+                    <a href="{{ url_for('add_property') }}" class="btn-nav">+ Add Property</a>
+                {% endif %}
+            {% endif %}
+            <span class="nav-user">👤 {{ session.user_name }}</span>
+            <a href="{{ url_for('logout') }}" class="nav-link logout">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+            <a href="{{ url_for('register') }}" class="btn-nav">Register</a>
+        {% endif %}
+    </div>
+</nav>
+<div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }} <span class="flash-close" onclick="this.parentElement.remove()">✕</span></div>
+        {% endfor %}
+    {% endwith %}
+</div>
+<main class="main-content">
+    {% block content %}{% endblock %}
+</main>
+<footer class="footer">
+    <div class="footer-inner">
+        <p>© 2024 <strong>ProRentalHub</strong> — Find Your Perfect Space</p>
+        <p class="footer-sub">Purchase your Dream Property</p>
+    </div>
+</footer>
+</body>
+</html>
