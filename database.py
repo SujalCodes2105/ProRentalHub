@@ -47,7 +47,7 @@ def init_db():
     try:
         cursor.execute(
             "INSERT INTO users (name, email, password, role, phone) VALUES (?, ?, ?, ?, ?)",
-            ('Admin', 'admin@prorentalhub.com', 'admin123', 'admin', '9999999999')
+            ('Admin', 'admin@PropertyLelo.com', 'admin123', 'admin', '9999999999')
         )
     except:
         pass

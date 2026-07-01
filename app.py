@@ -4,7 +4,7 @@ from database import get_db, init_db
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = 'prorentalhub_secret_2024'
+app.secret_key = 'PropertyLelo_secret_2024'
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}

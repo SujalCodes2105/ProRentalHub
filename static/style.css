@@ -1,5 +1,5 @@
 /* ============================================
-   ProRentalHub — style.css
+   PropertyLelo — style.css
    ============================================ */
 
 :root {
@@ -57,7 +57,7 @@ body {
     letter-spacing: 0.5px;
 }
 .brand-icon { font-size: 1.3rem; }
-.brand-accent { color: var(--accent-light); }
+.brand-accent { color: #ff9800; }
 .nav-links {
     display: flex;
     align-items: center;
